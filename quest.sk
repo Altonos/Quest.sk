@@ -1,0 +1,36 @@
+on load:
+  delete {quest::*}
+  wait 200 ticks
+  
+  set {quest::menge} to 64
+  set {quest::item} to any log
+  set {quest::info} to "Wood log"
+  set {quest::belohnung} to "20 wood logs"
+
+on join:
+  if {quest::%player%} is not set:
+    set {quest::%player%} to 0
+  stop
+
+
+
+
+every 25 ticks:
+  loop all players:
+    quest(loop-player)
+       
+function quest(p: player):
+  wipe {_p}'s sidebar
+  set name of sidebar of {_p} to "&7Quest"
+
+  
+  set score "§6%{quest::info}% [%{quest::%{_p}%}%|%{quest::menge}%]" in sidebar of {_p} to 2
+  set score "&6Belohnung: &6%{quest::belohnung}%" in sidebar of {_p} to 1
+ 
+
+
+on block break:
+  if event-block is {quest::item}:
+    add 1 to {quest::%player%}
+    if {quest::%player%} = {quest::menge}:
+      add {quest::belohnung} to player's inventory
