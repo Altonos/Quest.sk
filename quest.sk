@@ -2,6 +2,23 @@ on load:
   delete {quest::*} 
   wait 10 tick
 
+#!  chance of 15%:
+#!    set {quest::menge} to <number>
+#!    set {quest::item} to <item>
+#!    set {quest::info} to <info>
+#!    set {quest::belohnung} to <item>
+#!    stop
+
+
+
+  chance of 15%:
+    set {quest::menge} to 1000
+    set {quest::item} to damage 
+    set {quest::info} to damage
+    set {quest::belohnung} to Trident
+    stop
+
+
   chance of 35%:
     set {quest::menge} to 128
     set {quest::item} to short grass
@@ -69,15 +86,32 @@ function quest(p: player):
  
 
 
-on drop:
-  broadcast "%event-item%"
+#on drop:
+  #broadcast "%event-item%"
+
+
+
+on damage:
+  #broadcast "%{quest::fertig::%attacker%}%"
+  if {quest::item} is instant damage:
+    add damage to {quest::%attacker%}
+    if {quest::%attacker%} > {quest::menge}:
+      if {quest::fertig::%attacker%} is not set:
+        set {quest::fertig::%attacker%} to true
+        #broadcast "%{quest::belohnung}%"
+        wait 10 ticks
+        add {quest::belohnung} to attacker's inventory
+      stop
 
 
 on block break:
-  broadcast "%event-block%"
+  #broadcast "%event-block%"
   if event-block is {quest::item}:
     add 1 to {quest::%player%}
-    if {quest::%player%} = {quest::menge}:
-      broadcast "%{quest::belohnung}%"
-      wait 10 ticks
-      add {quest::belohnung} to player's inventory
+    if {quest::%player%} > {quest::menge}:
+      if {quest::fertig::%player%} is not set:
+        set {quest::fertig::%player%} to true
+        #broadcast "%{quest::belohnung}%"
+        wait 10 ticks
+        add {quest::belohnung} to player's inventory
+      stop
