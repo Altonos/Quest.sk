@@ -1,11 +1,49 @@
 on load:
-  delete {quest::*}
-  wait 200 ticks
-  
-  set {quest::menge} to 64
-  set {quest::item} to any log
-  set {quest::info} to "Wood log"
-  set {quest::belohnung} to "20 wood logs"
+  delete {quest::*} 
+  wait 10 tick
+
+  chance of 35%:
+    set {quest::menge} to 128
+    set {quest::item} to short grass
+    set {quest::info} to Grass
+    set {quest::belohnung} to 32 Steak
+    stop
+
+
+  chance of 10%:
+    set {quest::menge} to 25
+    set {quest::item} to diamond ore 
+    set {quest::info} to diamond
+    set {quest::belohnung} to villager spawn egg
+    stop
+
+
+  chance of 40%:
+    set {quest::menge} to 128
+    set {quest::item} to dirt 
+    set {quest::info} to dirt
+    set {quest::belohnung} to 15 iron ore
+    stop
+
+
+  wait 1 tick
+  chance of 100%:
+    set {quest::menge} to 192
+    set {quest::item} to stone 
+    set {quest::info} to Stone
+    set {quest::belohnung} to 15 iron ore
+    stop
+
+
+  wait 1 tick
+  chance of 100%:
+    set {quest::menge} to 64
+    set {quest::item} to any log
+    set {quest::info} to "Wood log"
+    set {quest::belohnung} to "20 wood logs"
+    stop
+
+
 
 on join:
   if {quest::%player%} is not set:
@@ -18,6 +56,8 @@ on join:
 every 25 ticks:
   loop all players:
     quest(loop-player)
+    if {quest::%loop-player%} is not set:
+      set {quest::%loop-player%} to 0 
        
 function quest(p: player):
   wipe {_p}'s sidebar
@@ -29,8 +69,15 @@ function quest(p: player):
  
 
 
+on drop:
+  broadcast "%event-item%"
+
+
 on block break:
+  broadcast "%event-block%"
   if event-block is {quest::item}:
     add 1 to {quest::%player%}
     if {quest::%player%} = {quest::menge}:
+      broadcast "%{quest::belohnung}%"
+      wait 10 ticks
       add {quest::belohnung} to player's inventory
